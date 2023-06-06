@@ -84,7 +84,6 @@ public:
         std::cout << "Experience Level: " << experienceLevel << std::endl;
     }
 };
-
 class WorkerBuilder
 {
 private:
@@ -93,7 +92,6 @@ private:
     PostWorker post;
     int salary;
     int exp;
-    std::string experienceLevel;
 
 public:
     WorkerBuilder& setName(const std::string& name)
@@ -128,14 +126,12 @@ public:
 
     Worker build() const
     {
-        int yearsOfExperience = exp / 12;
         std::string expLevel;
-
-        if (yearsOfExperience < 1)
+        if (exp < 12)
         {
             expLevel = "Начинающий";
         }
-        else if (yearsOfExperience < 5)
+        else if (exp < 60)
         {
             expLevel = "Опытный";
         }
@@ -148,54 +144,175 @@ public:
     }
 };
 
-template<typename T>
-class MenuContainer
+struct Node
+{
+    Node* next;
+    Node* prev;
+    std::pair<std::string, double> value;
+};
+
+class MenuIterator
 {
 private:
-    std::vector<T> items;
+    Node* current;
 
 public:
-    class Iterator
+    MenuIterator(Node* node) : current(node) {}//
+
+    std::pair<std::string, double>& operator*()
     {
-    private:
-        typename std::vector<T>::const_iterator iter;
-
-    public:
-        Iterator(typename std::vector<T>::const_iterator iter)
-            : iter(iter)
-        {
-        }
-
-        const T& operator*() const
-        {
-            return *iter;
-        }
-
-        Iterator& operator++()
-        {
-            ++iter;
-            return *this;
-        }
-
-        bool operator!=(const Iterator& other) const
-        {
-            return iter != other.iter;
-        }
-    };
-
-    MenuContainer(std::vector<T> items)
-        : items(items)
-    {
+        return current->value;
     }
 
-    Iterator begin() const
+    MenuIterator& operator++()
     {
-        return Iterator(items.begin());
+        current = current->next;
+        return *this;
     }
 
-    Iterator end() const
+    MenuIterator operator++(int)
     {
-        return Iterator(items.end());
+        MenuIterator iterator = *this;
+        ++(*this);
+        return iterator;
+    }
+
+    MenuIterator& operator--()
+    {
+        current = current->prev;
+        return *this;
+    }
+
+    MenuIterator operator--(int)
+    {
+        MenuIterator iterator = *this;
+        --(*this);
+        return iterator;
+    }
+
+    bool operator==(const MenuIterator& other) const
+    {
+        return current == other.current;
+    }
+
+    bool operator!=(const MenuIterator& other) const
+    {
+        return !(*this == other);
+    }
+};
+
+class Menu
+{
+private:
+    Node* head;
+    Node* tail;
+
+public:
+    Menu() : head(nullptr), tail(nullptr) {}
+
+    MenuIterator begin()
+    {
+        return MenuIterator(head);
+    }
+
+    MenuIterator end()
+    {
+        return MenuIterator(tail->next);
+    }
+
+    void addElement(const std::string& dishName, double price)
+    {
+        if (head == nullptr)
+        {
+            head = new Node;
+            tail = head;
+            head->next = nullptr;
+            head->prev = nullptr;
+            head->value = std::make_pair(dishName, price);
+        }
+        else
+        {
+            if (!findElement(dishName))
+            {
+                Node* new_node = new Node;
+                new_node->value = std::make_pair(dishName, price);
+                new_node->prev = nullptr;
+                new_node->next = head;
+                head->prev = new_node;
+                head = new_node;
+            }
+        }
+    }
+
+    bool findElement(const std::string& dishName)
+    {
+        Node* curr = head;
+        while (curr != nullptr)
+        {
+            if (curr->value.first == dishName)
+                return true;
+            curr = curr->next;
+        }
+        return false;
+    }
+
+    void deleteElement(const std::string& dishName)
+    {
+        Node* curr = head;
+
+        while (curr != nullptr)
+        {
+            if (curr->value.first == dishName)
+            {
+                if (curr == head && curr == tail)
+                {
+                    delete curr;
+                    head = nullptr;
+                    tail = nullptr;
+                }
+                else if (curr == head)
+                {
+                    Node* d = head;
+                    head = head->next;
+                    head->prev = nullptr;
+                    delete d;
+                }
+                else if (curr == tail)
+                {
+                    Node* d = tail;
+                    tail = tail->prev;
+                    tail->next = nullptr;
+                    delete d;
+                }
+                else
+                {
+                    curr->prev->next = curr->next;
+                    curr->next->prev = curr->prev;
+                    delete curr;
+                }
+                curr = nullptr;
+            }
+            else
+                curr = curr->next;
+        }
+    }
+
+    ~Menu()
+    {
+        clearList();
+    }
+
+    void clearList()
+    {
+        Node* curr = head;
+        while (curr != nullptr)
+        {
+            Node* last_curr = curr;
+            curr = curr->next;
+            delete last_curr;
+        }
+        head = nullptr;
+        tail = nullptr;
     }
 };
 int main()
@@ -230,19 +347,19 @@ std::cout << "Рейтинг ресторана " << r1.getName() << " (" << r1.
 
     w.print();
 
-    std::vector<std::pair<std::string, double>> dishes = {
-        {"Хинкали с бараниной", 150.0},
-        {"Хачапури по-аджарски", 120.0},
-        {"Цезаридзе с курицей", 180.0},
-        {"Прекраснейшее гранатовое вино", 300.0},
-        {"Чача", 200.0}
-    };
+    Menu m;
 
-    MenuContainer<std::pair<std::string, double>> m(dishes);
+    m.addElement("Хинкали с бараниной", 150.0);
+    m.addElement("Хачапури по-аджарски", 120.0);
+    m.addElement("Цезаридзе с курицей", 180.0);
+    m.addElement("Прекраснейшее гранатовое вино", 300.0);
+    m.addElement("Чача", 200.0);
 
-    std::for_each(m.begin(), m.end(), [](const auto& dish) {
-        std::cout << dish.first << " - " << dish.second << " рублей" << std::endl;
-        });
+    for (MenuIterator it = m.begin(); it != m.end(); ++it)
+    {
+        std::cout << (*it).first << " - " << (*it).second << " рублей" << std::endl;
+    }
+
 
     return 0;
 }
