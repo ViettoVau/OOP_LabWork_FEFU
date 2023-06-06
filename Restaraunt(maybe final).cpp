@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <vector>
 #include <ctime>
 #include <algorithm>
@@ -148,29 +148,56 @@ public:
     }
 };
 
-class Menu
+template<typename T>
+class MenuContainer
 {
 private:
-    std::vector<std::pair<std::string, double>> dishes;
+    std::vector<T> items;
 
 public:
-    Menu(std::vector<std::pair<std::string, double>> dishes)
-        : dishes(dishes)
+    class Iterator
+    {
+    private:
+        typename std::vector<T>::const_iterator iter;
+
+    public:
+        Iterator(typename std::vector<T>::const_iterator iter)
+            : iter(iter)
+        {
+        }
+
+        const T& operator*() const
+        {
+            return *iter;
+        }
+
+        Iterator& operator++()
+        {
+            ++iter;
+            return *this;
+        }
+
+        bool operator!=(const Iterator& other) const
+        {
+            return iter != other.iter;
+        }
+    };
+
+    MenuContainer(std::vector<T> items)
+        : items(items)
     {
     }
 
-    std::vector<std::pair<std::string, double>>::const_iterator begin() const
+    Iterator begin() const
     {
-        return dishes.begin();
+        return Iterator(items.begin());
     }
 
-    std::vector<std::pair<std::string, double>>::const_iterator end() const
+    Iterator end() const
     {
-        return dishes.end();
+        return Iterator(items.end());
     }
-
 };
-
 int main()
 {
     setlocale(LC_ALL, "Russian");
@@ -204,14 +231,18 @@ std::cout << "Рейтинг ресторана " << r1.getName() << " (" << r1.
     w.print();
 
     std::vector<std::pair<std::string, double>> dishes = {
-     {"Хинкали с бараниной", 150.0},
-     {"Хачапури по-аджарски", 120.0},
-     {"Цезаридзе с курицей", 180.0}
+        {"Хинкали с бараниной", 150.0},
+        {"Хачапури по-аджарски", 120.0},
+        {"Цезаридзе с курицей", 180.0},
+        {"Прекраснейшее гранатовое вино", 300.0},
+        {"Чача", 200.0}
     };
-    Menu m(dishes);
+
+    MenuContainer<std::pair<std::string, double>> m(dishes);
 
     std::for_each(m.begin(), m.end(), [](const auto& dish) {
         std::cout << dish.first << " - " << dish.second << " рублей" << std::endl;
         });
+
     return 0;
 }
