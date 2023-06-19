@@ -1,0 +1,31 @@
+﻿  ProjectRestaraunt.cpp
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\Container.h(19,34): error C4996: 'std::iterator<std::bidirectional_iterator_tag,T,ptrdiff_t,T *,T &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              T=Employee
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility(5959,1): message : см. объявление "std::iterator"
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(194): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "Container<Employee>::Iterator"
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\Container.h(19,34): error C4996: 'std::iterator<std::bidirectional_iterator_tag,T,ptrdiff_t,T *,T &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              T=Dish
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\xutility(5959,1): message : см. объявление "std::iterator"
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(202): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "Container<Dish>::Iterator"
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\Container.h(92,35): error C2676: бинарный "==": "T" не определяет этот оператор или преобразование к типу приемлемо к встроенному оператору
+          with
+          [
+              T=Dish
+          ]
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\Container.h(89): message : во время компиляции функции-члена класс шаблон "void Container<Dish>::deleteElement(const T &)"
+          with
+          [
+              T=Dish
+          ]
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(180): message : выполняется компиляция ссылки на экземпляр шаблон функции "void Container<Dish>::deleteElement(const T &)"
+          with
+          [
+              T=Dish
+          ]
+C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(159): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "Container<Dish>"
