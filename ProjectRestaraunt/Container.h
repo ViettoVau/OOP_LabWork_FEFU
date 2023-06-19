@@ -15,54 +15,62 @@ private:
         Node(const T& data) : data(data), prev(nullptr), next(nullptr) {}
     };
 
-public:
-    class Iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
-    private:
-        Node* current;
+    struct Iterator
+    {
+        using iterator_category = std::random_access_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+        using value_type = Node;
+        using pointer = Node*;
+        using reference = T&;
 
-    public:
-        explicit Iterator(Node* node) : current(node) {}
+        Iterator(Container::Iterator& o) : m_ptr(o.m_ptr) {}
+        Iterator(Container::Iterator&& o) noexcept : m_ptr(std::move(o.m_ptr))
+        {
+            o.m_ptr = nullptr;
+        }
+        Iterator(pointer ptr) : m_ptr(ptr) {}
         ~Iterator() {}
-        Iterator& operator++() {
-            if (current) {
-                current = current->next;
-            }
+
+        reference operator*() const { return m_ptr->data; }
+        pointer operator->() { return m_ptr; }
+        Iterator& operator++() { if (m_ptr) { m_ptr = m_ptr->next; } return *this; }
+        Iterator operator++(int) { Iterator tmp = *this; ++(*this); return tmp; }
+        Iterator& operator--() { if (m_ptr) { m_ptr = m_ptr->prev; } return *this; }
+        Iterator operator--(int) { Iterator tmp = *this; --(*this); return tmp; }
+        friend bool operator== (const Iterator& a, const Iterator& b) { return a.m_ptr == b.m_ptr; };
+        friend bool operator!= (const Iterator& a, const Iterator& b) { return a.m_ptr != b.m_ptr; };
+
+
+        // copy assignment
+        Iterator& operator=(const Container::Iterator& other)
+        {
+            // Guard self assignment
+            if (this == &other)
+                return *this;
+
+            *m_ptr = *other;
             return *this;
         }
 
-        Iterator operator++(int) {
-            Iterator temp(*this);
-            operator++();
-            return temp;
-        }
+        // move assignment
+        Iterator& operator=(Iterator&& other) noexcept
+        {
+            // Guard self assignment
+            if (this == &other)
+                return *this;
 
-        Iterator& operator--() {
-            if (current) {
-                current = current->prev;
-            }
+            m_ptr = std::move(other.m_ptr);
+            other.m_ptr = nullptr;
+
             return *this;
         }
 
-        Iterator operator--(int) {
-            Iterator temp(*this);
-            operator--();
-            return temp;
+        void swap(Iterator& other) {
+            std::swap(*m_ptr, *other);
         }
 
-        T& operator*() const {
-            return current->data;
-        }
-
-        bool operator==(const Iterator& other) const {
-            return current == other.current;
-        }
-
-        bool operator!=(const Iterator& other) const {
-            return !operator==(other);
-        }
-        void swap(Iterator& a, Iterator& b) {
-            std::swap(a,b);
-        }
+    private:
+        pointer m_ptr;
     };
 
 public:
