@@ -1,5 +1,2 @@
 ﻿  ProjectRestaraunt.cpp
-C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(257,79): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
-C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(258,96): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
-C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\ProjectRestaraunt.cpp(259,79): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
   ProjectRestaraunt.vcxproj -> C:\Users\ivank\OneDrive\Рабочий стол\ООП\FinalProject\ProjectRestaraunt\Debug\ProjectRestaraunt.exe

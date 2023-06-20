@@ -1,5 +1,8 @@
 ﻿#include <iostream>
 #include <string>
+#include <ranges>
+#include <algorithm>
+#include <functional>
 #include "Container.h" 
 enum class Week {
     Monday,
@@ -83,12 +86,20 @@ struct Dish {
     friend bool operator== (const Dish& a, const Dish& b) {
         return (a.name == b.name) && (a.price == b.price);
     };
+    friend bool operator< (const Dish& a, double b) {
+        return a.price<b;
+    };
+    friend std::ostream& operator<<(std::ostream& os, const Dish& dish) {
+        os << "- Название: " << dish.name << ", Цена: " << dish.price << "$";
+        return os;
+    }
+
 };
 
 class Restaurant {
 protected:
     std::string name;
-    int rating;
+    double rating;
     bool hasWebsite;
     int numGuests;
     int maxCapacity;
@@ -97,7 +108,7 @@ protected:
     std::string cuisineType;
     double totalProfit;
 public:
-    Restaurant(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
+    Restaurant(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
         : name(name), rating(rating), hasWebsite(hasWebsite), numGuests(0), maxCapacity(maxCapacity), cuisineType(cuisineType), totalProfit(0) {}
 
     void open(Week dayOfWeek) {
@@ -159,6 +170,11 @@ public:
         return amount;
     }
 
+    void showMenuwithMinPriceDish(double minprice)
+    {
+        menu.printMin(minprice);
+    }
+
     void showInfo() const {
         std::cout << "=========================" << std::endl;
         std::cout << "Ресторан: " << name << std::endl;
@@ -175,7 +191,7 @@ public:
 
         std::cout << "Меню:" << std::endl;
         for (const auto& dish : menu) {
-            std::cout << "- Название: " << dish.name << ", Цена: " << dish.price << std::endl;
+            std::cout << "- Название: " << dish.name << ", Цена: " << dish.price << "$" << std::endl;
         }
 
         std::cout << "Прибыль за сегодня: $" << totalProfit << std::endl;
@@ -186,27 +202,28 @@ public:
         return name;
     }
 
-    int getRating() {
+    double getRating() {
         return rating;
     }
     auto operator<=>(Restaurant& other)
     {
         return rating <=> other.rating;
     }
+ 
 };
 
 
 
 class Supra : public Restaurant {
 public:
-    Supra(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
+    Supra(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
         : Restaurant(name, rating, hasWebsite, maxCapacity, cuisineType) {}
 
 };
 
 class TokyoCity : public Restaurant {
 public:
-    TokyoCity(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
+    TokyoCity(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
         : Restaurant(name, rating, hasWebsite, maxCapacity, cuisineType) {}
 
   
@@ -214,33 +231,33 @@ public:
 
 class Laffa : public Restaurant {
 public:
-    Laffa(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
+    Laffa(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType)
         : Restaurant(name, rating, hasWebsite, maxCapacity, cuisineType) {}
 
 };
 
 class RestaurantFactory {
 public:
-    virtual Restaurant* createRestaurant(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType) = 0;
+    virtual Restaurant* createRestaurant(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType) = 0;
 };
 
 class SupraFactory : public RestaurantFactory {
 public:
-    Restaurant* createRestaurant(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType) override {
+    Restaurant* createRestaurant(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType) override {
         return new Supra(name, rating, hasWebsite, maxCapacity, cuisineType);
     }
 };
 
 class TokyoCityFactory : public RestaurantFactory {
 public:
-    Restaurant* createRestaurant(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType) override {
+    Restaurant* createRestaurant(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType) override {
         return new TokyoCity(name, rating, hasWebsite, maxCapacity, cuisineType);
     }
 };
 
 class LaffaFactory : public RestaurantFactory {
 public:
-    Restaurant* createRestaurant(std::string name, int rating, bool hasWebsite, int maxCapacity, std::string cuisineType) override {
+    Restaurant* createRestaurant(std::string name, double rating, bool hasWebsite, int maxCapacity, std::string cuisineType) override {
         return new Laffa(name, rating, hasWebsite, maxCapacity, cuisineType);
     }
 };
@@ -258,7 +275,6 @@ int main() {
     Restaurant* tokyoCityRestaurant = tokyoCityFactory.createRestaurant("Токио-Сити", 3.9, true, 70, "Японская");
     Restaurant* laffaRestaurant = laffaFactory.createRestaurant("Лаффа", 4.3, false, 100, "Восточная");
 
-    enum class PostWorker { Cook, Chef, Waiter, Manager, Cleaner };
     EmployeeBuilder employeeBuilder;
     Employee employee1 = employeeBuilder.setName("Виктор Петрович").setPosition("Chef").setExperience(25).setSalary(5000.0).build();
     Employee employee2 = employeeBuilder.setName("Максим").setPosition("Cook").setExperience(2).setSalary(2000.0).build();
@@ -281,7 +297,11 @@ int main() {
     Dish dish6 = { "Чизкейк", 12.0 };
 
     supraRestaurant->addDish(dish1);
+    supraRestaurant->addDish(dish2);
     supraRestaurant->addDish(dish3);
+    supraRestaurant->addDish(dish4);
+    supraRestaurant->addDish(dish5);
+    supraRestaurant->addDish(dish6);
     tokyoCityRestaurant->addDish(dish2);
     tokyoCityRestaurant->addDish(dish4);
     laffaRestaurant->addDish(dish5);
@@ -292,6 +312,7 @@ int main() {
     laffaRestaurant->open(Week::Sunday);
 
     supraRestaurant->showInfo();
+    supraRestaurant->showMenuwithMinPriceDish(11);
     tokyoCityRestaurant->showInfo();
     laffaRestaurant->showInfo();
     

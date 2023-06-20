@@ -3,7 +3,9 @@
 
 #include <cstddef>
 #include <iterator>
-
+#include <ranges>
+#include <algorithm>
+#include <functional>
 template <typename T>
 class Container {
 private:
@@ -17,7 +19,7 @@ private:
 
     struct Iterator
     {
-        using iterator_category = std::random_access_iterator_tag;
+        using iterator_category = std::bidirectional_iterator_tag;
         using difference_type = std::ptrdiff_t;
         using value_type = Node;
         using pointer = Node*;
@@ -75,7 +77,20 @@ private:
 
 public:
     Container() : head(nullptr), tail(nullptr), size(0) {}
-
+    Container(Container& other) : head(nullptr), tail(nullptr), size(0) {
+        if (other.head != nullptr) {
+            Node* current = other.head;
+            while (current != nullptr) {
+                addElement(current->data);
+                current = current->next;
+            }
+        }
+    }
+    Container(T data) : head(nullptr), tail(nullptr), size(0) {
+        Node* n = new Node(data);
+        head = n;
+        tail = n;
+    }
     ~Container() {
         clearList();
     }
@@ -159,6 +174,17 @@ public:
 
     std::size_t getSize() const {
         return size;
+    }
+    
+    void printMin(double minValue) const {
+        auto isExceedMax = [minValue](const T& value) { return value < minValue; };
+
+        for (const auto& element : *this) {
+            if (isExceedMax(element)) {
+                std::cout << element << " " << std::endl;
+            }
+        }
+        std::cout << std::endl;
     }
 
 private:
